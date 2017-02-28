@@ -1,0 +1,47 @@
+---
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: centos-72
+    transport:
+      username: centos
+    driver:
+      image_id: ami-a413d9c4
+      block_device_mappings:
+        - device_name: /dev/sda1
+          ebs:
+            volume_type: standard
+            volume_size: 30
+            delete_on_termination: true
+  - name: rhel-72
+    transport:
+      username: ec2-user
+    driver:
+      image_id: ami-6f30c60f
+      block_device_mappings:
+        - device_name: /dev/sda1
+          ebs:
+            volume_type: standard
+            volume_size: 30
+            delete_on_termination: true
+  - name: ubuntu-1604
+    driver:
+      image_id: ami-7c803d1c
+      block_device_mappings:
+        - device_name: /dev/sda1
+          ebs:
+            volume_type: standard
+            volume_size: 20
+            delete_on_termination: true
+
+suites:
+  - name: default
+    run_list:
+      - recipe[efs::default]
+    attributes:
+      efs:
+        mounts:
+          /mnt/test:
+            fsid: <%= ENV['EFS_TEST_FSID'] %> 
+        remove_unspecified_mounts: true
