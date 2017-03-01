@@ -11,6 +11,9 @@ Presently, you just configure global defaults (presently the recommended values 
 ### Platforms
 
 - Ubuntu 16.04
+- Centos 7.2
+- RHEL 7.2
+- Debian (untested)
 
 ## Attributes
 
@@ -36,10 +39,16 @@ Presently, you just configure global defaults (presently the recommended values 
     <td></td>
   </tr>
   <tr>
+    <td><tt>['efs']['mounts'][mount point]['region']</tt></td>
+    <td>string</td>
+    <td>Override AWS region for the mount</td>
+    <td>derived from node['ec2']['placement_availability_zone']</td>
+  </tr>
+  <tr>
     <td><tt>['efs']['mounts'][mount point]['options']</tt></td>
     <td>string</td>
-    <td>Override the options string (generated from below attributes) with this</td>
-    <td></td>
+    <td>Override mount options string</td>
+    <td>generated from attributes of mount and global below</td>
   </tr>
   <tr>
     <td><tt>['efs']['rsize']</tt></td>
