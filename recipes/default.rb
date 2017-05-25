@@ -24,7 +24,11 @@ node['efs']['mounts'].each do |mount_point, attribs|
   attribs['options'] ||= "nfsvers=4.1,rsize=#{attribs['rsize']},wsize=#{attribs['wsize']}," \
     "#{attribs['behavior']},timeo=#{attribs['timeout']},retrans=#{attribs['retrans']}"
 
-  region = attribs.fetch('region', node['ec2']['placement_availability_zone'][0..-2])
+  begin
+    region = attribs.fetch('region', node['ec2']['placement_availability_zone'][0..-2])
+  rescue NoMethodError
+    raise "No region specified for mount #{mount_point} and this doesn\'t appear to be an EC2 instance."
+  end
 
   directory mount_point
 
