@@ -1,5 +1,13 @@
 # efs CHANGELOG
 
+## 0.1.3
+- [mattlqx] - Add unit tests
+- [mattlqx] - Relocate `ruby_block` logic to library function 
+- [mattlqx] - Add Travis CI
+
+## 0.1.2
+- [mattlqx] - Metadata tweaks
+
 ## 0.1.0
 - [mattlqx] - Initial release of efs
 
