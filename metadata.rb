@@ -13,5 +13,5 @@ chef_version '>= 12'
 
 supports 'ubuntu'
 supports 'centos'
-supports 'rhel'
+supports 'redhat'
 supports 'debian'
