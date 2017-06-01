@@ -1,6 +1,7 @@
 ---
 provisioner:
   name: chef_solo
+  chef_omnibus_install_options: '-v 13.1.31'
 
 platforms:
   - name: centos-72
@@ -38,6 +39,7 @@ platforms:
 suites:
   - name: default
     run_list:
+      - recipe[efs_test::default]
       - recipe[efs::default]
     attributes:
       efs:
