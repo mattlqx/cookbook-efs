@@ -25,7 +25,7 @@ describe 'efs::default' do
 
     it 'but not when disabled by default' do
       chef_run.converge(described_recipe)
-      expect(chef_run).to_not run_ruby_block('remove unspecified efs mounts')
+      expect(chef_run).not_to run_ruby_block('remove unspecified efs mounts')
     end
 
     it 'by removing unspecified mounts' do
@@ -77,13 +77,13 @@ describe 'efs::default' do
       chef_run.node.normal['efs']['mounts']['/mnt/test']['fsid'] = 'fs-1234abcd'
     end
 
-    it 'should not converge without region' do
+    it 'does not converge without region' do
       expect do
         chef_run.converge(described_recipe)
       end.to raise_error(RuntimeError)
     end
 
-    it 'should converge with region' do
+    it 'does converge with region' do
       chef_run.node.normal['efs']['mounts']['/mnt/test']['region'] = 'us-west-2'
       chef_run.converge(described_recipe)
     end

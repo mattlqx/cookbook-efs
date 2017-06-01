@@ -22,7 +22,7 @@ describe 'remove_unspecified_mounts' do
 
   before do
     allow(IO).to receive(:readlines).and_call_original
-    expect(IO).to receive(:readlines).with('/etc/fstab').and_return(fstab)
+    allow(IO).to receive(:readlines).with('/etc/fstab').and_return(fstab)
   end
 
   it 'removes unspecified efs mounts' do
