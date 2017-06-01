@@ -38,7 +38,7 @@ node['efs']['mounts'].each do |mount_point, attribs|
     fstype 'nfs4'
     device attribs['fsid'] + '.efs.' + region + '.amazonaws.com:/'
     options attribs['options']
-    action [:enable, :mount]
+    action %i(enable mount)
   end
 end
 
