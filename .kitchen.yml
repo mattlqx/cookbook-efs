@@ -39,6 +39,7 @@ platforms:
 suites:
   - name: default
     run_list:
+      - recipe[efs_test::default]
       - recipe[efs::default]
     attributes:
       efs:

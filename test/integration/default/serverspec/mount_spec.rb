@@ -20,4 +20,5 @@ end
 
 describe file('/etc/fstab') do
   its(:content) { should match /amazonaws\.com:\/ \/mnt\/test nfs4/ }
+  its(:content) { should_not match /fs-fedc4321/ }
 end
