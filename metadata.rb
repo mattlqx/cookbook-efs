@@ -9,9 +9,11 @@ version          '0.1.4'
 source_url 'https://github.com/mattlqx/cookbook-efs' if respond_to?(:source_url)
 issues_url 'https://github.com/mattlqx/cookbook-efs/issues' if respond_to?(:issues_url)
 
-chef_version '>= 12'
+chef_version '>= 12' if respond_to?(:chef_version)
 
-supports 'ubuntu'
-supports 'centos'
-supports 'redhat'
-supports 'debian'
+if respond_to?(:supports)
+  supports 'ubuntu'
+  supports 'centos'
+  supports 'redhat'
+  supports 'debian'
+end
