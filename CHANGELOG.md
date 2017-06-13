@@ -1,8 +1,14 @@
 # efs CHANGELOG
 
+## 0.1.5
+- [mattlqx] - Gate more metadata for older Chef 11 delivery.
+
+## 0.1.4
+- [mattlqx] - Add supporting docs recommended by Supermarket.
+
 ## 0.1.3
 - [mattlqx] - Add unit tests
-- [mattlqx] - Relocate `ruby_block` logic to library function 
+- [mattlqx] - Relocate `ruby_block` logic to library function
 - [mattlqx] - Add Travis CI
 
 ## 0.1.2
