@@ -2,9 +2,7 @@
 # Cookbook Name:: efs
 # Recipe:: default
 #
-# Copyright 2017, Parchment Inc.
-#
-# All rights reserved - Do Not Redistribute
+# Copyright 2017, Matt Kulka
 #
 
 case node['platform']
