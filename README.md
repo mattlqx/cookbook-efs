@@ -103,10 +103,6 @@ Configure any desired mounts under `node['efs']['mounts']` and include `efs` in 
 }
 ```
 
-## Testing
-
-Set the `EFS_TEST_FSID` environment variable and run `kitchen test` with correct attributes to setup EC2 instances with the `kitchen-ec2` driver.
-
 ## Contributing
 
 1. Fork the repository on Github
