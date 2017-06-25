@@ -5,12 +5,7 @@
 # Copyright 2017, Matt Kulka
 #
 
-case node['platform']
-when 'ubuntu', 'debian'
-  package 'nfs-common'
-when 'redhat'
-  package 'nfs-utils'
-end
+package node['efs']['nfs-package']
 
 node['efs']['mounts'].each do |mount_point, attribs|
   attribs = attribs.to_hash
