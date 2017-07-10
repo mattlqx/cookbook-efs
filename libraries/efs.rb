@@ -1,4 +1,5 @@
 module EFS
+  # Class representing an Elastic Filesystem share/mount
   class Mount
     attr_reader :mount
     attr_reader :fsid
@@ -11,7 +12,7 @@ module EFS
     attr_accessor :extra_options
 
     def initialize(mount, fsid, region)
-      raise "Non-nil region required" if region.nil?
+      raise 'Non-nil region required' if region.nil?
 
       @mount = mount
       @fsid = fsid
@@ -19,7 +20,7 @@ module EFS
       @extra_options = ''
     end
 
-    def options_from_line(line)
+    def options_from_line(line) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
       linedevice, linemount, _fstype, options, _freq, _pass = line.split(/\s+/)
       raise "Device does not match #{device}" if linedevice != device
       raise "Mount does not match #{mount}" if linemount != mount
@@ -63,7 +64,7 @@ module EFS
     end
 
     def exists?
-      fstab_line != nil || mtab_line != nil
+      !fstab_line.nil? || !mtab_line.nil?
     end
 
     def fstab_line

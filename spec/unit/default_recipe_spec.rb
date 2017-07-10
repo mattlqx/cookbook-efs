@@ -3,7 +3,6 @@ require 'spec_helper'
 describe 'efs::default' do
   shared_examples_for 'mounts efs filesystem' do
     it 'for /mnt/test' do
-      device = 'fs-1234abcd.efs.us-west-2.amazonaws.com:/'
       expect(chef_run).to mount_mount_efs('/mnt/test').with(fsid: 'fs-1234abcd')
     end
   end
@@ -58,8 +57,8 @@ describe 'efs::default' do
     let(:fstab) do
       [
         'fs-fedc4321.efs.us-west-2.amazonaws.com:/ /mnt/test nfs4 ' \
-        "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,foo=bar,retrans=2 0 2",
-        "some other test data"
+        'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,foo=bar,retrans=2 0 2',
+        'some other test data'
       ]
     end
 
