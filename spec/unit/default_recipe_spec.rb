@@ -78,6 +78,12 @@ describe 'efs::default' do
       expect(chef_run).to create_directory('/mnt/test')
     end
 
+    it 'unmounts existing efs mount' do
+      old_device = 'fs-fedc4321.efs.us-west-2.amazonaws.com:/'
+      expect(chef_run).to disable_mount("/mnt/test #{old_device} unmount").with(device: old_device)
+      expect(chef_run).to umount_mount("/mnt/test #{old_device} unmount").with(device: old_device)
+    end
+
     it 'mounts efs mount' do
       expect(chef_run).to enable_mount('/mnt/test').with(device: 'fs-1234abcd.efs.us-west-2.amazonaws.com:/')
       expect(chef_run).to mount_mount('/mnt/test').with(device: 'fs-1234abcd.efs.us-west-2.amazonaws.com:/')

@@ -3,18 +3,26 @@ resource_name :mount_efs
 default_action :mount
 
 property :mount_point, String, name_property: true, desired_state: false
-property :fsid, String, desired_state: false, regex: [/fs-[a-f0-9]{8}/]
+property :fsid, String, desired_state: false, regex: [/fs-[a-f0-9]{8}/], required: true
 property :region, String, desired_state: false
-property :rsize, Integer, default: node['efs']['rsize'], desired_state: false
-property :wsize, Integer, default: node['efs']['wsize'], desired_state: false
+property :rsize, Integer, default: node['efs']['rsize'], desired_state: false,
+                          coerce: proc { |m| m.is_a?(String) ? m.to_i : m }
+property :wsize, Integer, default: node['efs']['wsize'], desired_state: false,
+                          coerce: proc { |m| m.is_a?(String) ? m.to_i : m }
 property :behavior, String, default: node['efs']['behavior'], desired_state: false
-property :timeout, Integer, default: node['efs']['timeout'], desired_state: false
-property :retrans, Integer, default: node['efs']['retrans'], desired_state: false
+property :timeout, Integer, default: node['efs']['timeout'], desired_state: false,
+                            coerce: proc { |m| m.is_a?(String) ? m.to_i : m }
+property :retrans, Integer, default: node['efs']['retrans'], desired_state: false,
+                            coerce: proc { |m| m.is_a?(String) ? m.to_i : m }
 property :options, String, desired_state: false
 
 load_current_value do |new_resource|
   @mount = EFS::Mount.new(new_resource.mount_point, new_resource.fsid, region_value)
-  (@mount.load_existing_options if @mount.exists?) || current_value_does_not_exist!
+  if @mount.exists?
+    @mount.load_existing_options
+  else
+    current_value_does_not_exist!
+  end
 
   region region_value
   rsize @mount.rsize unless @mount.rsize.nil?
@@ -34,8 +42,8 @@ def region_value
   region
 end
 
-def new_object # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-  mount = EFS::Mount.new(mount_point, fsid, region_value) if @mount.nil?
+def new_object # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
+  mount = EFS::Mount.new(mount_point, fsid, region_value)
   mount.rsize = rsize unless rsize.nil?
   mount.wsize = wsize unless wsize.nil?
   mount.behavior = behavior unless behavior.nil?
@@ -48,9 +56,20 @@ end
 action :mount do
   mount = new_object
 
-  directory new_resource.mount_point
+  converge_if_changed :mount_point do
+    directory new_resource.mount_point
+  end
 
   converge_if_changed do
+    mount.other_mounts.each do |line|
+      localdevice, localmount, _fstype, _options, _freq, _pass = line.split(/\s+/)
+      mount "#{localmount} #{localdevice} unmount" do
+        device localdevice
+        mount_point localmount
+        action %i[disable umount]
+      end
+    end
+
     mount new_resource.mount_point do
       fstype 'nfs4'
       device mount.device

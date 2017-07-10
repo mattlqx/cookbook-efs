@@ -21,8 +21,7 @@ module EFS
     end
 
     def options_from_line(line) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
-      linedevice, linemount, _fstype, options, _freq, _pass = line.split(/\s+/)
-      raise "Device does not match #{device}" if linedevice != device
+      _linedevice, linemount, _fstype, options, _freq, _pass = line.split(/\s+/)
       raise "Mount does not match #{mount}" if linemount != mount
       options.split(',').each do |pair|
         k, v = pair.split('=')
@@ -64,39 +63,59 @@ module EFS
     end
 
     def exists?
-      !fstab_line.nil? || !mtab_line.nil?
+      !existing_line.nil?
     end
 
-    def fstab_line
+    def mounted?
+      !mtab_lines.empty?
+    end
+
+    def fstab_lines
       file_include('/etc/fstab')
     end
 
-    def mtab_line
+    def mtab_lines
       file_include('/etc/mtab')
     end
 
     def file_include(file)
+      lines = []
       IO.readlines(file).each do |line|
-        return line.chomp if /^\s*#{device}/ =~ line
+        lines << line.gsub(/\s+/, ' ').chomp if /\s#{mount}\s/ =~ line
       end
-      nil
+      lines
     end
 
     def existing_line
-      mtab_line || fstab_line
+      (existing_lines - other_mounts).first
     end
 
-    def self.remove_unspecified_mounts(mounts, run_context)
+    def existing_lines
+      return fstab_lines unless fstab_lines.empty?
+      mtab_lines
+    end
+
+    # Returns fstab lines with the same mount point but different devices
+    def other_mounts
+      others = []
+      fstab_lines.each do |line|
+        localdevice, localmount, _fstype, _options, _freq, _pass = line.split(/\s+/)
+        others << line if localmount == mount && localdevice != device
+      end
+      others
+    end
+
+    def self.remove_unspecified_mounts(mounts, run_context) # rubocop:disable Metrics/AbcSize
       IO.readlines('/etc/fstab').each do |line|
         device, mount, _fstype, _options, _freq, _pass = line.split(/\s+/)
-        next unless device && device.match(/fs-[a-f0-9]{8}\.efs\.[a-z]{2}-[a-z]+-\d\.amazonaws\.com/) \
-            && !mounts.key?(mount)
+        next unless mount && device.match(/fs-[a-f0-9]{8}\.efs\.[a-z]{2}-[a-z]+-\d\.amazonaws\.com/)
+        next if mounts.key?(mount) && mounts[mount]['device'] == device
 
         m = Chef::Resource::Mount.new(mount, run_context)
         m.device = device
         m.action = :nothing
         m.run_action(:disable)
-        m.run_action(:umount)
+        m.run_action(:umount) unless mounts.key?(mount)
       end
     end
   end

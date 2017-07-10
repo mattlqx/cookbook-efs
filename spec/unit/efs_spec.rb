@@ -13,6 +13,10 @@ describe 'efs class' do
       'some other test data'
     ]
   end
+  let(:fstab_with_dupe) do
+    fstab.clone.insert(1, 'fs-1234abcd.efs.us-west-2.amazonaws.com:/ /mnt/test nfs4 ' \
+                    'nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,foo=bar,retrans=2 0 2')
+  end
 
   before do
     allow(IO).to receive(:readlines).and_call_original
@@ -37,8 +41,24 @@ describe 'efs class' do
 
     it 'exists in correct file' do
       expect(@mount.exists?).to be true
-      expect(@mount.fstab_line).to eq(fstab[0])
-      expect(@mount.mtab_line).to be_nil
+      expect(@mount.fstab_lines).to eq([fstab[0]])
+      expect(@mount.mtab_lines).to eq([])
+    end
+  end
+
+  context 'has multiple existing fstab lines' do
+    before do
+      allow(IO).to receive(:readlines).with('/etc/fstab').and_return(fstab_with_dupe)
+      allow(IO).to receive(:readlines).with('/etc/mtab').and_return(fstab)
+    end
+
+    it 'sees both entries' do
+      expect(@mount.exists?).to be true
+      expect(@mount.fstab_lines).to eq([fstab_with_dupe[0], fstab_with_dupe[1]])
+    end
+
+    it 'shows other mounts' do
+      expect(@mount.other_mounts).to eq([fstab_with_dupe[1]])
     end
   end
 
@@ -50,8 +70,8 @@ describe 'efs class' do
 
     it 'exists in correct file' do
       expect(@mount.exists?).to be true
-      expect(@mount.mtab_line).to eq(fstab[0])
-      expect(@mount.fstab_line).to be_nil
+      expect(@mount.mtab_lines).to eq([fstab[0]])
+      expect(@mount.fstab_lines).to eq([])
     end
 
     it 'finds existing line' do
