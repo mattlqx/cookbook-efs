@@ -2,7 +2,7 @@
 
 Cookbook to mount Elastic Filesystem endpoints in Amazon Web Services.
 
-Presently, you just configure global defaults (presently the recommended values from Amazon) and individual mounts through node attributes. In the future, a LWRP may be added.
+You just configure global defaults (presently the recommended values from Amazon) and individual mounts through node attributes. You also have the option of using the `mount_efs` resource within your own recipes.
 
 ## Requirements
 
@@ -102,6 +102,10 @@ Configure any desired mounts under `node['efs']['mounts']` and include `efs` in 
   ]
 }
 ```
+
+### mount_efs
+
+This cookbook is implemented with a custom resource so you can use `mount_efs` in your cookbook recipes as well with the same available attributes as the `node['efs']['mounts']` structure.
 
 ## Contributing
 

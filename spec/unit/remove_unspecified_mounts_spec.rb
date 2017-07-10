@@ -1,5 +1,5 @@
 require 'spec_helper'
-require './libraries/remove_unspecified_mounts'
+require './libraries/efs'
 
 describe 'remove_unspecified_mounts' do
   let(:fstab) do
@@ -32,7 +32,7 @@ describe 'remove_unspecified_mounts' do
     allow(m).to receive(:device).with('fs-fedc4321.efs.us-west-2.amazonaws.com:/').and_call_original
     allow(m).to receive(:action).with(:nothing).and_call_original
 
-    remove_unspecified_mounts(chef_run.node['efs']['mounts'], chef_run.run_context)
+    EFS::Mount.remove_unspecified_mounts(chef_run.node['efs']['mounts'], chef_run.run_context)
     expect(Chef::Resource::Mount).to have_received(:new).once
     expect(m).to have_received(:run_action).with(:disable)
     expect(m).to have_received(:run_action).with(:umount)
