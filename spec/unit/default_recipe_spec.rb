@@ -65,7 +65,7 @@ describe 'efs::default' do
     let(:chef_run) do
       allow(IO).to receive(:readlines).and_call_original
       allow(IO).to receive(:readlines).with('/etc/fstab').and_return(fstab)
-      allow(IO).to receive(:readlines).with('/etc/mtab').and_return(fstab)
+      allow(IO).to receive(:readlines).with('/etc/mtab').and_return(mtab)
 
       c = ChefSpec::SoloRunner.new(step_into: ['mount_efs']) do |node|
         node.normal['efs']['mounts']['/mnt/test']['fsid'] = 'fs-1234abcd'
@@ -74,19 +74,40 @@ describe 'efs::default' do
       c.converge(described_recipe)
     end
 
-    it 'creates mount directory' do
-      expect(chef_run).to create_directory('/mnt/test')
+    describe 'when already mounted' do
+      let(:mtab) { fstab }
+
+      it 'creates mount directory' do
+        expect(chef_run).to create_directory('/mnt/test')
+      end
+
+      it 'unmounts existing efs mount' do
+        old_device = 'fs-fedc4321.efs.us-west-2.amazonaws.com:/'
+        expect(chef_run).to disable_mount("/mnt/test #{old_device} unmount").with(device: old_device)
+        expect(chef_run).to umount_mount("/mnt/test #{old_device} unmount").with(device: old_device)
+      end
+
+      it 'mounts efs mount' do
+        expect(chef_run).to enable_mount('/mnt/test').with(device: 'fs-1234abcd.efs.us-west-2.amazonaws.com:/')
+        expect(chef_run).to mount_mount('/mnt/test').with(device: 'fs-1234abcd.efs.us-west-2.amazonaws.com:/')
+      end
     end
 
-    it 'unmounts existing efs mount' do
-      old_device = 'fs-fedc4321.efs.us-west-2.amazonaws.com:/'
-      expect(chef_run).to disable_mount("/mnt/test #{old_device} unmount").with(device: old_device)
-      expect(chef_run).to umount_mount("/mnt/test #{old_device} unmount").with(device: old_device)
-    end
+    describe 'when not mounted' do
+      let(:mtab) { 'nothing here' }
 
-    it 'mounts efs mount' do
-      expect(chef_run).to enable_mount('/mnt/test').with(device: 'fs-1234abcd.efs.us-west-2.amazonaws.com:/')
-      expect(chef_run).to mount_mount('/mnt/test').with(device: 'fs-1234abcd.efs.us-west-2.amazonaws.com:/')
+      before do
+        chef_run.converge(described_recipe)
+      end
+
+      it 'creates mount directory' do
+        expect(chef_run).to create_directory('/mnt/test')
+      end
+
+      it 'mounts efs mount' do
+        expect(chef_run).to enable_mount('/mnt/test').with(device: 'fs-1234abcd.efs.us-west-2.amazonaws.com:/')
+        expect(chef_run).to mount_mount('/mnt/test').with(device: 'fs-1234abcd.efs.us-west-2.amazonaws.com:/')
+      end
     end
   end
 end
