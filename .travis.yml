@@ -16,7 +16,7 @@ before_install:
   - openssl aes-256-cbc -K $encrypted_ca75a4df0e44_key -iv $encrypted_ca75a4df0e44_iv -in .travis/supermarket.pem.enc -out .travis/supermarket.pem -d
 deploy:
   provider: script
-  script: bundle exec knife supermarket share efs -o .. --config-option user=mkulka --config-option client_key=.travis/supermarket.pem
+  script: bundle install && bundle exec knife supermarket share efs -o .. --config-option user=mkulka --config-option client_key=.travis/supermarket.pem
   skip_cleanup: true
   on:
     tags: true
