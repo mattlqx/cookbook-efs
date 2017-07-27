@@ -18,7 +18,7 @@ property :options, String, desired_state: false
 
 load_current_value do |new_resource|
   @mount = EFS::Mount.new(new_resource.mount_point, new_resource.fsid, region_value)
-  if @mount.exists?
+  if @mount.exists? && @mount.mounted?
     @mount.load_existing_options
   else
     current_value_does_not_exist!

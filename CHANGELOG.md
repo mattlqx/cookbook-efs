@@ -1,5 +1,11 @@
 # efs CHANGELOG
 
+## 1.0.1
+- [mattlqx] - Fix resource not converging if fstab line exists but not mounted.
+
+## 1.0.0
+- [mattlqx] - Moved implementation to library, wrappered by resource and recipe.
+
 ## 0.1.5
 - [mattlqx] - Gate more metadata for older Chef 11 delivery.
 
