@@ -33,7 +33,7 @@ describe 'efs class' do
     end.to raise_error(RuntimeError)
   end
 
-  context 'has existing fstab line' do
+  context 'with existing fstab line' do
     before do
       allow(IO).to receive(:readlines).with('/etc/fstab').and_return(fstab)
       allow(IO).to receive(:readlines).with('/etc/mtab').and_return([])
@@ -46,7 +46,7 @@ describe 'efs class' do
     end
   end
 
-  context 'has multiple existing fstab lines' do
+  context 'with multiple existing fstab lines' do
     before do
       allow(IO).to receive(:readlines).with('/etc/fstab').and_return(fstab_with_dupe)
       allow(IO).to receive(:readlines).with('/etc/mtab').and_return(fstab)
@@ -62,7 +62,7 @@ describe 'efs class' do
     end
   end
 
-  context 'has existing mtab line' do
+  context 'with existing mtab line' do
     before do
       allow(IO).to receive(:readlines).with('/etc/mtab').and_return(fstab)
       allow(IO).to receive(:readlines).with('/etc/fstab').and_return([])
@@ -95,3 +95,4 @@ describe 'efs class' do
     end
   end
 end
+# rubocop:enable RSpec/InstanceVariable

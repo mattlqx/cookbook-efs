@@ -21,7 +21,7 @@ describe 'efs::default' do
     end
   end
 
-  context 'on Ubuntu' do
+  context 'when on Ubuntu' do
     let(:chef_run) do
       c = ChefSpec::SoloRunner.new(platform: 'ubuntu', version: '16.04')
       c.node.normal['efs']['mounts']['/mnt/test']['fsid'] = 'fs-1234abcd'
@@ -37,7 +37,7 @@ describe 'efs::default' do
     it_behaves_like 'manages existing efs mounts'
   end
 
-  context 'on RedHat' do
+  context 'when on RedHat' do
     let(:chef_run) do
       c = ChefSpec::SoloRunner.new(platform: 'redhat', version: '7.3')
       c.node.normal['efs']['mounts']['/mnt/test']['fsid'] = 'fs-1234abcd'
@@ -53,7 +53,7 @@ describe 'efs::default' do
     it_behaves_like 'manages existing efs mounts'
   end
 
-  context 'uses mount_efs resource' do
+  context 'with mount_efs resource' do
     let(:fstab) do
       [
         'fs-fedc4321.efs.us-west-2.amazonaws.com:/ /mnt/test nfs4 ' \
