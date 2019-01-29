@@ -23,6 +23,7 @@ module EFS
     def options_from_line(line) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
       _linedevice, linemount, _fstype, options, _freq, _pass = line.split(/\s+/)
       raise "Mount does not match #{mount}" if linemount != mount
+
       options.split(',').each do |pair|
         k, v = pair.split('=')
         case k
@@ -92,6 +93,7 @@ module EFS
 
     def existing_lines
       return fstab_lines unless fstab_lines.empty?
+
       mtab_lines
     end
 

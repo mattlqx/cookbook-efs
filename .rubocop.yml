@@ -12,7 +12,10 @@ AllCops:
 Metrics/LineLength:
   Max: 120
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
   Enabled: false
 
 Lint/ParenthesesAsGroupedExpression:
