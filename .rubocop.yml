@@ -18,6 +18,9 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   Enabled: false
 
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
 Lint/ParenthesesAsGroupedExpression:
   Enabled: false
 
