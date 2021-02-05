@@ -67,7 +67,7 @@ action :mount do
       mount "#{localmount} #{localdevice} unmount" do
         device localdevice
         mount_point localmount
-        action %i[disable umount]
+        action %i(disable umount)
       end
     end
 
@@ -75,7 +75,7 @@ action :mount do
       fstype 'nfs4'
       device mount.device
       options mount.options
-      action %i[enable mount]
+      action %i(enable mount)
     end
   end
 end
@@ -87,6 +87,6 @@ action :umount do
     fstype 'nfs4'
     device mount.device
     options mount.options
-    action %i[disable umount]
+    action %i(disable umount)
   end
 end

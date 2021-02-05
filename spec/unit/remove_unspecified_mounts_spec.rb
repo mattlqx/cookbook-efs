@@ -30,7 +30,7 @@ describe 'remove_unspecified_mounts' do
     allow(m).to receive(:device).with('fs-fedc4321.efs.us-west-2.amazonaws.com:/').and_call_original
     allow(m).to receive(:action).with(:nothing).and_call_original
 
-    EFS::Mount.remove_unspecified_mounts({'/mnt/test' => {'fsid' => 'fs-1234abcd'}}, chef_runner.node.run_context)
+    EFS::Mount.remove_unspecified_mounts({ '/mnt/test' => { 'fsid' => 'fs-1234abcd' } }, chef_runner.node.run_context)
     expect(Chef::Resource::Mount).to have_received(:new).twice
     expect(m).to have_received(:run_action).with(:disable).twice
     expect(m).to have_received(:run_action).with(:umount).once

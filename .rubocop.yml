@@ -9,7 +9,7 @@ AllCops:
     - 'test/integration/**/serverspec/*'
     - 'test/cookbooks/**/*'
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 120
 
 Style/TrailingCommaInArrayLiteral:

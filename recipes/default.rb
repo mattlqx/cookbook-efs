@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: efs
+# Cookbook:: efs
 # Recipe:: default
 #
-# Copyright 2017, Matt Kulka
+# Copyright:: 2017, Matt Kulka
 #
 
 package node['efs']['nfs-package']
