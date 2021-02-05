@@ -1,4 +1,5 @@
 resource_name :mount_efs
+provides :mount_efs
 
 default_action :mount
 
