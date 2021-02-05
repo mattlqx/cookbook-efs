@@ -12,13 +12,11 @@ describe 'remove_unspecified_mounts' do
     ]
   end
 
-  let(:chef_run) do
-    c = ChefSpec::SoloRunner.new(platform: 'redhat', version: '7.3')
-    c.node.normal['efs']['mounts']['/mnt/test']['fsid'] = 'fs-1234abcd'
-    c.node.normal['efs']['remove_unspecified_mounts'] = true
-    c.node.automatic['ec2']['placement_availability_zone'] = 'us-west-2a'
-    c
-  end
+  platform 'redhat', '8'
+
+  override_attributes['efs']['mounts']['/mnt/test']['fsid'] = 'fs-1234abcd'
+  override_attributes['efs']['remove_unspecified_mounts'] = true
+  automatic_attributes['ec2']['placement_availability_zone'] = 'us-west-2a'
 
   before do
     allow(IO).to receive(:readlines).and_call_original
@@ -26,13 +24,13 @@ describe 'remove_unspecified_mounts' do
   end
 
   it 'removes unspecified efs mounts' do
-    m = Chef::Resource::Mount.new('/mnt/foo', chef_run.run_context)
+    m = Chef::Resource::Mount.new('/mnt/foo', chef_runner.node.run_context)
     allow(Chef::Resource::Mount).to receive(:new).and_return(m)
     allow(m).to receive(:run_action).and_return(true)
     allow(m).to receive(:device).with('fs-fedc4321.efs.us-west-2.amazonaws.com:/').and_call_original
     allow(m).to receive(:action).with(:nothing).and_call_original
 
-    EFS::Mount.remove_unspecified_mounts(chef_run.node['efs']['mounts'], chef_run.run_context)
+    EFS::Mount.remove_unspecified_mounts({'/mnt/test' => {'fsid' => 'fs-1234abcd'}}, chef_runner.node.run_context)
     expect(Chef::Resource::Mount).to have_received(:new).twice
     expect(m).to have_received(:run_action).with(:disable).twice
     expect(m).to have_received(:run_action).with(:umount).once

@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe 'efs::default' do
+  platform 'ubuntu', '20.04'
+
+  override_attributes['efs']['mounts']['/mnt/test']['fsid'] = 'fs-1234abcd'
+  automatic_attributes['ec2']['placement_availability_zone'] = 'us-west-2a'
+
   shared_examples_for 'mounts efs filesystem' do
     it 'for /mnt/test' do
       expect(chef_run).to mount_mount_efs('/mnt/test').with(fsid: 'fs-1234abcd')
@@ -9,25 +14,20 @@ describe 'efs::default' do
 
   shared_examples_for 'manages existing efs mounts' do
     it 'but not when disabled by default' do
-      chef_run.converge(described_recipe)
       expect(chef_run).not_to run_ruby_block('remove unspecified efs mounts')
     end
 
-    it 'by removing unspecified mounts' do
-      chef_run.node.normal['efs']['remove_unspecified_mounts'] = true
-      chef_run.converge(described_recipe)
+    context 'when enabled' do
+      override_attributes['efs']['remove_unspecified_mounts'] = true
 
-      expect(chef_run).to run_ruby_block('remove unspecified efs mounts')
+      it 'by removing unspecified mounts' do
+        expect(chef_run).to run_ruby_block('remove unspecified efs mounts')
+      end
     end
   end
 
   context 'when on Ubuntu' do
-    let(:chef_run) do
-      c = ChefSpec::SoloRunner.new(platform: 'ubuntu', version: '16.04')
-      c.node.normal['efs']['mounts']['/mnt/test']['fsid'] = 'fs-1234abcd'
-      c.node.automatic['ec2']['placement_availability_zone'] = 'us-west-2a'
-      c.converge(described_recipe)
-    end
+    platform 'ubuntu', '20.04'
 
     it 'installs nfs' do
       expect(chef_run).to install_package('nfs-common')
@@ -38,12 +38,7 @@ describe 'efs::default' do
   end
 
   context 'when on RedHat' do
-    let(:chef_run) do
-      c = ChefSpec::SoloRunner.new(platform: 'redhat', version: '7.3')
-      c.node.normal['efs']['mounts']['/mnt/test']['fsid'] = 'fs-1234abcd'
-      c.node.automatic['ec2']['placement_availability_zone'] = 'us-west-2a'
-      c.converge(described_recipe)
-    end
+    platform 'redhat', '8'
 
     it 'installs nfs' do
       expect(chef_run).to install_package('nfs-utils')
@@ -62,17 +57,13 @@ describe 'efs::default' do
       ]
     end
 
-    let(:chef_run) do
+    before do
       allow(IO).to receive(:readlines).and_call_original
       allow(IO).to receive(:readlines).with('/etc/fstab').and_return(fstab)
       allow(IO).to receive(:readlines).with('/etc/mtab').and_return(mtab)
-
-      c = ChefSpec::SoloRunner.new(step_into: ['mount_efs']) do |node|
-        node.normal['efs']['mounts']['/mnt/test']['fsid'] = 'fs-1234abcd'
-        node.automatic['ec2']['placement_availability_zone'] = 'us-west-2a'
-      end
-      c.converge(described_recipe)
     end
+
+    step_into :mount_efs
 
     describe 'when already mounted' do
       let(:mtab) { fstab }
@@ -95,10 +86,6 @@ describe 'efs::default' do
 
     describe 'when not mounted' do
       let(:mtab) { 'nothing here' }
-
-      before do
-        chef_run.converge(described_recipe)
-      end
 
       it 'creates mount directory' do
         expect(chef_run).to create_directory('/mnt/test')

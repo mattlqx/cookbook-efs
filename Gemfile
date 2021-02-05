@@ -1,10 +1,9 @@
 source 'https://rubygems.org'
 
 gem "berkshelf"
-gem "test-kitchen"
-gem "kitchen-vagrant"
-gem "knife-spec"
+gem "chef", "~> 16.1"
 gem "chefspec"
+gem "cookstyle"
+gem "kitchen-vagrant"
 gem "rubocop-rspec"
-gem "foodcritic"
-gem "chef", "~>13.1"
+gem "test-kitchen"

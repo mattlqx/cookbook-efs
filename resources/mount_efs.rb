@@ -6,14 +6,14 @@ default_action :mount
 property :mount_point, String, name_property: true, desired_state: false
 property :fsid, String, desired_state: false, regex: [/fs-[a-f0-9]{8}/], required: true
 property :region, String, desired_state: false
-property :rsize, Integer, default: node['efs']['rsize'], desired_state: false,
+property :rsize, Integer, default: lazy { node['efs']['rsize'] }, desired_state: false,
                           coerce: proc { |m| m.is_a?(String) ? m.to_i : m }
-property :wsize, Integer, default: node['efs']['wsize'], desired_state: false,
+property :wsize, Integer, default: lazy { node['efs']['wsize'] }, desired_state: false,
                           coerce: proc { |m| m.is_a?(String) ? m.to_i : m }
-property :behavior, String, default: node['efs']['behavior'], desired_state: false
-property :timeout, Integer, default: node['efs']['timeout'], desired_state: false,
+property :behavior, String, default: lazy { node['efs']['behavior'] }, desired_state: false
+property :timeout, Integer, default: lazy { node['efs']['timeout'] }, desired_state: false,
                             coerce: proc { |m| m.is_a?(String) ? m.to_i : m }
-property :retrans, Integer, default: node['efs']['retrans'], desired_state: false,
+property :retrans, Integer, default: lazy { node['efs']['retrans'] }, desired_state: false,
                             coerce: proc { |m| m.is_a?(String) ? m.to_i : m }
 property :options, String, desired_state: false
 
